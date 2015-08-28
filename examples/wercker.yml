@@ -1,0 +1,42 @@
+# This references the default Ruby container from
+# the Docker Hub.
+box: zazo/rails
+# You can also use services such as databases. Read more on our dev center:
+# http://devcenter.wercker.com/docs/services/index.html
+
+# This is the build pipeline. Pipelines are the core of wercker
+# Read more about pipelines on our dev center
+# http://devcenter.wercker.com/docs/pipelines/index.html
+build:
+  steps:
+    - asux/bundle-install@1.1.8:
+        gemfile: config/Gemfile
+        path: /usr/local/bundle
+        without: development production
+    - script:
+        name: create rspec and coverage dir
+        code: mkdir -p $WERCKER_REPORT_ARTIFACTS_DIR/rspec $WERCKER_REPORT_ARTIFACTS_DIR/coverage
+    - script:
+        name: rspec
+        code: rspec
+  after-steps:
+    - asux/pretty-slack-notify:
+        webhook_url: $slack_url
+        channel: devops
+deploy:
+  steps:
+    - asux/elastic-beanstalk-deploy:
+        key: $AWS_ACCESS_KEY_ID
+        secret: $AWS_SECRET_ACCESS_KEY
+        app_name: $EB_APP
+        env_name: $EB_ENV
+        region: $AWS_REGION
+  after-steps:
+    - akelmanson/rollbar-notify:
+        access-token: $rollbar_access_token
+    - rafaelverger/newrelic-deployment:
+        api_key: $newrelic_api_key
+        app_name: $app_name ($WERCKER_DEPLOYTARGET_NAME)
+    - asux/pretty-slack-notify:
+        webhook_url: $slack_url
+        channel: devops
