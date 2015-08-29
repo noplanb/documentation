@@ -121,8 +121,8 @@ Simple `wercker.yml` [without DB](./examples/wercker.yml) or [with PostgreSQL](.
 3. Create application from Github repo under **Zazo** organization with Docker-enabled stack.
 4. Configure environment variables there including AWS tokens for *wercker* IAM account and `EB_APP` with EB application name for service (`zazo-service`).
 ```yaml
-AWS_ACCESS_KEY_ID: AKIAIRII2GGTOOZ75XQA
-AWS_SECRET_ACCESS_KEY: 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
+AWS_ACCESS_KEY_ID: <WERCKER_AWS_ACCESS_KEY_ID>
+AWS_SECRET_ACCESS_KEY: <WERCKER_AWS_SECRET_ACCESS_KEY>
 AWS_REGION: us-west-1
 ```
 4. Add *production* target and set `EB_ENV` with EB environment (`zs-production`).
